@@ -1,0 +1,33 @@
+{
+  "name": "@samland/socket-proxy",
+  "description": "A proxy that allows web sockets to become traditional UDP / TCP sockets.",
+  "version": "1.0.0",
+  "main": "../../dist/proxy/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node ../../dist/proxy/index.js",
+    "lint": "eslint . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Samland-Gov/mobile-nm.git"
+  },
+  "author": "ajh123",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Samland-Gov/mobile-nm/issues"
+  },
+  "homepage": "https://github.com/Samland-Gov/mobile-nm#readme",
+  "dependencies": {
+    "typescript": "^5.5.2",
+    "ws": "^8.17.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.6.0",
+    "@types/ws": "^8.5.10",
+    "eslint": "^9.6.0",
+    "globals": "^15.6.0",
+    "typescript-eslint": "^7.14.1"
+  }
+}

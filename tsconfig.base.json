@@ -5,7 +5,16 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist"
+    "paths": {
+      "@samland/*": ["./packages/*/"]
+    }
   },
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.stub.ts",
+    "node_modules",
+    "dist"
+  ],
   "lib": ["es2015"]
 }
+  

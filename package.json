@@ -1,32 +1,11 @@
 {
-  "name": "mobile-nm",
-  "description": "Mobile network management for Samland",
-  "version": "1.0.0",
-  "main": "dist/index.js",
+  "private": true,
+  "workspaces": [
+    "./packages/*"
+  ],
   "scripts": {
-    "start": "tsc && node dist/index.js",
-    "lint": "eslint . --ext .ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Samland-Gov/mobile-nm.git"
-  },
-  "author": "ajh123",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Samland-Gov/mobile-nm/issues"
-  },
-  "homepage": "https://github.com/Samland-Gov/mobile-nm#readme",
-  "dependencies": {
-    "typescript": "^5.5.2",
-    "ws": "^8.17.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.6.0",
-    "@types/ws": "^8.5.10",
-    "eslint": "^9.6.0",
-    "globals": "^15.6.0",
-    "typescript-eslint": "^7.14.1"
+    "start:proxy": "cd packages/proxy && npm run start && cd ../..",
+    "build:proxy": "cd packages/proxy && npm run build && cd ../.. ",
+    "build": "npm run build:proxy"
   }
 }
