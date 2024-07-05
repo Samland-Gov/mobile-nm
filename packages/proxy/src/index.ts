@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import { handleUDPProxy, UDPConnections, UDPMessageQueue } from './udpProxy';
-import { handleTCPProxy, TCPConnections, TCPMessageQueue } from './tcpProxy';
+import { handleUDPProxy, UDPConnections } from './udpProxy';
+import { handleTCPProxy, TCPConnections } from './tcpProxy';
 
 const port = 8080;
 const wss = new WebSocketServer({ port: port });
@@ -9,15 +9,13 @@ const wss = new WebSocketServer({ port: port });
 interface ClientConnections {
     udp: UDPConnections;
     tcp: TCPConnections;
-    udpQueue: UDPMessageQueue;
-    tcpQueue: TCPMessageQueue;
 }
 const clients: Map<WebSocket, ClientConnections> = new Map();
 
 wss.on('connection', (ws) => {
     console.log('WebSocket connection established');
 
-    const clientConnections: ClientConnections = { udp: {}, tcp: {}, udpQueue: {}, tcpQueue: {} };
+    const clientConnections: ClientConnections = { udp: {}, tcp: {}};
     clients.set(ws, clientConnections);
 
     ws.on('message', (message) => {
@@ -26,10 +24,10 @@ wss.on('connection', (ws) => {
 
             switch (type) {
                 case 'udp':
-                    handleUDPProxy(ws, data, clientConnections.udp, clientConnections.udpQueue);
+                    handleUDPProxy(ws, data, clientConnections.udp);
                     break;
                 case 'tcp':
-                    handleTCPProxy(ws, data, clientConnections.tcp, clientConnections.tcpQueue);
+                    handleTCPProxy(ws, data, clientConnections.tcp);
                     break;
                 default:
                     console.error('Unknown proxy type');

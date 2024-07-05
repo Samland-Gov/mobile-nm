@@ -1,10 +1,24 @@
 -- Create websocket connection
 local ws = assert(http.websocket("ws://127.0.0.1:8080"))
 
--- Function to send a message and receive a response
-local function send_and_receive(ws, message)
-    ws.send(message)
-    return ws.receive()
+local function receive()
+    -- Receive and print HTTP response headers
+    local receive_message = {
+        type = "tcp",
+        data = {
+            id = "example_tcp_connection",
+            action = "receive"
+        }
+    }
+    ws.send(textutils.serializeJSON(receive_message))
+    data, binary = ws.receive()
+    return textutils.unserializeJSON(data)
+end
+
+local function send(table)
+    ws.send(textutils.serializeJSON(table))
+    data, binary = ws.receive()
+    return textutils.unserializeJSON(data)
 end
 
 -- Open a TCP connection to example.com on port 80
@@ -17,11 +31,8 @@ local connect_message = {
         port = 80
     }
 }
-ws.send(textutils.serializeJSON(connect_message))
-
--- Receive connect response
-local connect_response = textutils.unserializeJSON(ws.receive())
-print("Connect response:", textutils.serializeJSON(connect_response))
+local connect_response = send(connect_message)
+print("Connect response:", connect_response.status)
 
 -- Send an HTTP GET request to example.com
 local get_request_message = {
@@ -32,19 +43,23 @@ local get_request_message = {
         message = "GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n"
     }
 }
-ws.send(textutils.serializeJSON(get_request_message))
+local get_response = send(get_request_message)
+print("Get response:", get_response.status)
 
--- Receive and print HTTP response headers
-local receive_message = {
-    type = "tcp",
-    data = {
-        id = "example_tcp_connection",
-        action = "receive"
-    }
-}
-ws.send(textutils.serializeJSON(receive_message))
-local http_response = textutils.unserializeJSON(ws.receive())
-print("HTTP Response:", http_response.data)
+
+print("HTTP Response:")
+while true do
+    local r, b = ws.receive()
+    local resp = textutils.unserializeJSON(r)
+    if resp.status ~= nil and resp.status == "new_data" then
+        print("Data:", resp.data)
+    end
+    -- print(resp.status)
+    if resp.status ~= nil and resp.status == "disconnected" then
+        break
+    end
+end
+
 
 -- Close the TCP connection
 local close_message = {
@@ -54,11 +69,9 @@ local close_message = {
         action = "close"
     }
 }
-ws.send(textutils.serializeJSON(close_message))
+local close_response = send(close_message)
 
--- Receive close response
-local close_response = textutils.unserializeJSON(ws.receive())
-print("Close response:", textutils.serializeJSON(close_response))
+print("Close response:", close_response.status)
 
 -- Close websocket connection
 ws.close()
