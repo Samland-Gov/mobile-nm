@@ -6,7 +6,7 @@ configuration:
   mongodb: # the mongodb connected by this webui
     name: free5gc # name of the mongodb
     url: mongodb://db:27017 # a valid URL of the mongodb
-  nrfUri: http://nrf.samland.minersonline.uk:8000 # a valid URI of NRF
+  nrfUri: http://nrf.free5gc.org:8000 # a valid URI of NRF
   nrfCertPem: cert/nrf.pem
   webServer:
     scheme: http

@@ -5,15 +5,15 @@ info:
 configuration:
   sbi: # Service-based interface information
     scheme: http # the protocol for sbi (http or https)
-    registerIPv4: ausf.samland.minersonline.uk # IP used to register to NRF
-    bindingIPv4: ausf.samland.minersonline.uk  # IP used to bind the service
+    registerIPv4: ausf.free5gc.org # IP used to register to NRF
+    bindingIPv4: ausf.free5gc.org  # IP used to bind the service
     port: 8000 # Port used to bind the service
     tls: # the local path of TLS key
       pem: cert/ausf.pem # AUSF TLS Certificate
       key: cert/ausf.key # AUSF TLS Private key
   serviceNameList: # the SBI services provided by this AUSF, refer to TS 29.509
     - nausf-auth # Nausf_UEAuthentication service
-  nrfUri: http://nrf.samland.minersonline.uk:8000 # a valid URI of NRF
+  nrfUri: http://nrf.free5gc.org:8000 # a valid URI of NRF
   nrfCertPem: cert/nrf.pem
   plmnSupportList: # the PLMNs (Public Land Mobile Network) list supported by this AUSF
     - mcc: 001 # Mobile Country Code (3 digits string, digit: 0~9)

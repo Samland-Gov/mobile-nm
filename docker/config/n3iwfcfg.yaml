@@ -27,7 +27,7 @@ configuration:
   # --- N2 Interfaces ---
   amfSCTPAddresses: # the IP list of N2 interfaces (SCTP) on AMF when using NGAP
     - ip:
-        - amf.samland.minersonline.uk
+        - amf.free5gc.org
       port: 38412
   nasTcpPort: 20000 # TCP port which the NAS listens on
 
@@ -41,7 +41,7 @@ configuration:
   # --- N3 Interfaces ---
   n3iwfGtpBindAddress: 10.100.200.15 # IP address of N3 interface (GTP) on this N3IWF
 
-  fqdn: n3iwf.samland.minersonline.uk # FQDN of this N3IWF
+  fqdn: n3iwf.free5gc.org # FQDN of this N3IWF
 
   # --- Security ---
   privateKey: cert/n3iwf.key # Private key file path

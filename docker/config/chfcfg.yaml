@@ -6,13 +6,13 @@ configuration:
   chfName: CHF # the name of this CHF
   sbi: # Service-based interface information
     scheme: http # the protocol for sbi (http or https)
-    registerIPv4: chf.samland.minersonline.uk # IP used to register to NRF
-    bindingIPv4: chf.samland.minersonline.uk # IP used to bind the service
+    registerIPv4: chf.free5gc.org # IP used to register to NRF
+    bindingIPv4: chf.free5gc.org # IP used to bind the service
     port: 8000 # port used to bind the service
     tls: # the local path of TLS key
       pem: cert/chf.pem # CHF TLS Certificate
       key: cert/chf.key # CHF TLS Private key
-  nrfUri: http://nrf.samland.minersonline.uk:8000 # a valid URI of NRF
+  nrfUri: http://nrf.free5gc.org:8000 # a valid URI of NRF
   nrfCertPem: cert/nrf.pem # NRF Certificate
   serviceNameList: # the SBI services provided by this CHF, refer to TS 32.291
     - nchf-convergedcharging # Nchf_AMPolicyControl service
@@ -34,14 +34,14 @@ configuration:
     cdrFilePath: /tmp
   abmfDiameter:
     protocol: tcp
-    hostIPv4: chf.samland.minersonline.uk
+    hostIPv4: chf.free5gc.org
     port: 3868
     tls:
       pem: cert/chf.pem
       key: cert/chf.key
   rfDiameter:
     protocol: tcp
-    hostIPv4: chf.samland.minersonline.uk
+    hostIPv4: chf.free5gc.org
     port: 3869
     tls:
       pem: cert/chf.pem # CHF TLS Certificate

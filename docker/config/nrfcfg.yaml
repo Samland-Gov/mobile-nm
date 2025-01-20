@@ -7,8 +7,8 @@ configuration:
   MongoDBUrl: mongodb://db:27017 # a valid URL of the mongodb
   sbi: # Service-based interface information
     scheme: http # the protocol for sbi (http or https)
-    registerIPv4: nrf.samland.minersonline.uk # IP used to serve NFs or register to another NRF
-    bindingIPv4: nrf.samland.minersonline.uk  # IP used to bind the service
+    registerIPv4: nrf.free5gc.org # IP used to serve NFs or register to another NRF
+    bindingIPv4: nrf.free5gc.org  # IP used to bind the service
     port: 8000 # port used to bind the service
     cert: # the local path of TLS key
       pem: cert/nrf.pem # NRF TLS Certificate

@@ -5,8 +5,8 @@ info:
 configuration:
   sbi: # Service-based interface information
     scheme: http # the protocol for sbi (http or https)
-    registerIPv4: udr.samland.minersonline.uk # IP used to register to NRF
-    bindingIPv4: udr.samland.minersonline.uk  # IP used to bind the service
+    registerIPv4: udr.free5gc.org # IP used to register to NRF
+    bindingIPv4: udr.free5gc.org  # IP used to bind the service
     port: 8000 # port used to bind the service
     tls: # the local path of TLS key
       pem: cert/udr.pem # UDR TLS Certificate
@@ -15,7 +15,7 @@ configuration:
   mongodb:
     name: free5gc # Database name in MongoDB
     url: mongodb://db:27017 # URL of MongoDB
-  nrfUri: http://nrf.samland.minersonline.uk:8000 # a valid URI of NRF
+  nrfUri: http://nrf.free5gc.org:8000 # a valid URI of NRF
   nrfCertPem: cert/nrf.pem
 
 logger: # log output setting

@@ -1,4 +1,4 @@
-name: samcom
+version: "3.8"
 
 services:
   free5gc-upf:
@@ -13,7 +13,7 @@ services:
     networks:
       privnet:
         aliases:
-          - upf.samland.minersonline.uk
+          - upf.free5gc.org
 
   db:
     container_name: mongodb
@@ -43,7 +43,7 @@ services:
     networks:
       privnet:
         aliases:
-          - nrf.samland.minersonline.uk
+          - nrf.free5gc.org
     depends_on:
       - db
 
@@ -62,7 +62,7 @@ services:
       privnet:
         ipv4_address: 10.100.200.16
         aliases:
-          - amf.samland.minersonline.uk
+          - amf.free5gc.org
     depends_on:
       - free5gc-nrf
 
@@ -80,7 +80,7 @@ services:
     networks:
       privnet:
         aliases:
-          - ausf.samland.minersonline.uk
+          - ausf.free5gc.org
     depends_on:
       - free5gc-nrf
 
@@ -98,7 +98,7 @@ services:
     networks:
       privnet:
         aliases:
-          - nssf.samland.minersonline.uk
+          - nssf.free5gc.org
     depends_on:
       - free5gc-nrf
 
@@ -116,7 +116,7 @@ services:
     networks:
       privnet:
         aliases:
-          - pcf.samland.minersonline.uk
+          - pcf.free5gc.org
     depends_on:
       - free5gc-nrf
 
@@ -135,7 +135,7 @@ services:
     networks:
       privnet:
         aliases:
-          - smf.samland.minersonline.uk
+          - smf.free5gc.org
     depends_on:
       - free5gc-nrf
       - free5gc-upf
@@ -154,7 +154,7 @@ services:
     networks:
       privnet:
         aliases:
-          - udm.samland.minersonline.uk
+          - udm.free5gc.org
     depends_on:
       - db
       - free5gc-nrf
@@ -174,7 +174,7 @@ services:
     networks:
       privnet:
         aliases:
-          - udr.samland.minersonline.uk
+          - udr.free5gc.org
     depends_on:
       - db
       - free5gc-nrf
@@ -194,7 +194,7 @@ services:
     networks:
       privnet:
         aliases:
-          - chf.samland.minersonline.uk
+          - chf.free5gc.org
     depends_on:
       - db
       - free5gc-nrf
@@ -215,7 +215,7 @@ services:
       privnet:
         ipv4_address: 10.100.200.15
         aliases:
-          - n3iwf.samland.minersonline.uk
+          - n3iwf.free5gc.org
     depends_on:
       - free5gc-amf
       - free5gc-smf
@@ -252,7 +252,7 @@ services:
     networks:
       privnet:
         aliases:
-          - nef.samland.minersonline.uk
+          - nef.free5gc.org
     depends_on:
       - db
       - free5gc-nrf
@@ -293,7 +293,7 @@ services:
     networks:
       privnet:
         aliases:
-          - gnb.samland.minersonline.uk
+          - gnb.free5gc.org
     depends_on:
       - free5gc-amf
       - free5gc-upf
@@ -312,7 +312,7 @@ services:
       privnet:
         ipv4_address: 10.100.200.203
         aliases:
-          - n3ue.samland.minersonline.uk
+          - n3ue.free5gc.org
     depends_on:
       - free5gc-n3iwf
 

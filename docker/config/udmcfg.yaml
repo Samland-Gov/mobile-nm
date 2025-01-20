@@ -11,13 +11,13 @@ configuration:
     - nudm-pp # Nudm_ParameterProvisionDataManagement service
   sbi: # Service-based interface information
     scheme: http # the protocol for sbi (http or https)
-    registerIPv4: udm.samland.minersonline.uk # IP used to register to NRF
-    bindingIPv4: udm.samland.minersonline.uk  # IP used to bind the service
+    registerIPv4: udm.free5gc.org # IP used to register to NRF
+    bindingIPv4: udm.free5gc.org  # IP used to bind the service
     port: 8000 # Port used to bind the service
     tls: # the local path of TLS key
       pem: cert/udm.pem # UDM TLS Certificate
       key: cert/udm.key # UDM TLS Private key
-  nrfUri: http://nrf.samland.minersonline.uk:8000 # a valid URI of NRF
+  nrfUri: http://nrf.free5gc.org:8000 # a valid URI of NRF
   nrfCertPem: cert/nrf.pem
 
   # test data set from TS33501-f60 Annex C.4
