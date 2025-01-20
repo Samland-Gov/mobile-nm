@@ -4,7 +4,7 @@ services:
   free5gc-upf:
     container_name: upf
     image: free5gc/upf:v3.4.4
-    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
+    command: bash -c "chmod +x ./upf-iptables.sh && ./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
       - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
