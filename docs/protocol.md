@@ -11,13 +11,20 @@ The protocol involves three main components:
 
 All messages are JSON objects with a `type` field indicating the message type. Additional fields depend on the message type.
 
+All User IDs are MSISDN(phone number)-like.
+
+Authentication challenges are derived from the US's secret key which both the US and MSC have stored.
+
+Packed IDs are a unique incrementing number so that responses can be linked to requests. 
+
 ### User Station to BMS Messages
 
 1. **Authentication Request**
    ```json
    {
        "type": "auth",
-       "user_id": "<user_id>"
+       "user_id": "<user_id>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -27,7 +34,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
        "type": "auth_response",
        "user_id": "<user_id>",
        "challenge": "<challenge>",
-       "response": "<response>"
+       "response": "<response>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -35,7 +43,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
    ```json
    {
        "type": "auth_logout",
-       "user_id": "<user_id>"
+       "user_id": "<user_id>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -45,7 +54,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
        "type": "text",
        "source_user": "<source_user_id>",
        "target_user": "<target_user_id>",
-       "message": "<message>"
+       "message": "<message>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -55,7 +65,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
    ```json
    {
        "type": "bms_register",
-       "bms_id": "<bms_id>"
+       "bms_id": "<bms_id>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -64,7 +75,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
    {
        "type": "auth",
        "user_id": "<user_id>",
-       "bms_id": "<bms_id>"
+       "bms_id": "<bms_id>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -74,7 +86,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
        "type": "auth_response",
        "user_id": "<user_id>",
        "challenge": "<challenge>",
-       "response": "<response>"
+       "response": "<response>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -83,7 +96,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
    {
        "type": "auth_logout",
        "user_id": "<user_id>",
-       "bms_id": "<bms_id>"
+       "bms_id": "<bms_id>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -93,7 +107,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
        "type": "text",
        "source_user": "<source_user_id>",
        "target_user": "<target_user_id>",
-       "message": "<message>"
+       "message": "<message>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -104,7 +119,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
    {
        "type": "challenge",
        "challenge": "<challenge>",
-       "user_id": "<user_id>"
+       "user_id": "<user_id>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -113,7 +129,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
    {
        "type": "auth_result",
        "status": "Authenticated" | "Failed",
-       "user_id": "<user_id>"
+       "user_id": "<user_id>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -122,7 +139,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
    {
        "type": "logout_result",
        "status": "Logged out" | "Failed",
-       "user_id": "<user_id>"
+       "user_id": "<user_id>",
+       "packet_id": "<packet_id"
    }
    ```
 
@@ -132,7 +150,8 @@ All messages are JSON objects with a `type` field indicating the message type. A
        "type": "text",
        "source_user": "<source_user_id>",
        "target_user": "<target_user_id>",
-       "message": "<message>"
+       "message": "<message>",
+       "packet_id": "<packet_id"
    }
    ```
 
