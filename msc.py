@@ -3,6 +3,10 @@ import websockets
 import json
 import random
 import hashlib
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Dictionary to store user secrets (passwords/keys)
 user_secrets = {
@@ -39,20 +43,21 @@ async def handle_bms_connection(websocket, path):
     try:
         # BMS Registration - Receive BMS ID
         msg = await websocket.recv()
-        print(msg)
+        logging.info(f"Received message: {msg}")
         message_data = json.loads(msg)
 
         if message_data["type"] == "bms_register" and "bms_id" in message_data:
             # Save BMS ID and associate it with the WebSocket connection
             bms_id = message_data["bms_id"]
             bms_connections[bms_id] = websocket
-            print(f"[BMS {bms_id}] registered successfully.")
+            logging.info(f"[BMS {bms_id}] registered successfully.")
             await websocket.send(json.dumps({"status": "BMS registered"}))
         else:
             await websocket.send(json.dumps({"error": "Invalid registration message"}))
 
         while True:
             msg = await websocket.recv()
+            logging.info(f"Received message: {msg}")
             message_data = json.loads(msg)
 
             if message_data["type"] == "auth":
@@ -66,7 +71,7 @@ async def handle_bms_connection(websocket, path):
                 # Generate a challenge and send to the BMS
                 challenge = generate_challenge()
                 challenge_message = {"type": "challenge", "challenge": challenge, "user_id": user_id}
-                print(f"Generated challenge for user {user_id}: {challenge}")
+                logging.info(f"Generated challenge for user {user_id}: {challenge}")
                 await websocket.send(json.dumps(challenge_message))
 
             elif message_data["type"] == "auth_response":
@@ -77,13 +82,13 @@ async def handle_bms_connection(websocket, path):
                 # Validate the response
                 is_valid = validate_response(user_id, {"challenge": challenge, "response": response})
                 expected_response = hashlib.sha256(f"{user_secrets[user_id]}{challenge}".encode()).hexdigest()
-                print(f"Received auth response for user {user_id}: {response}")
-                print(f"Expected response for user {user_id}: {expected_response}")
-                print(f"Authentication {'succeeded' if is_valid else 'failed'} for user {user_id}")
+                logging.info(f"Received auth response for user {user_id}: {response}")
+                logging.info(f"Expected response for user {user_id}: {expected_response}")
+                logging.info(f"Authentication {'succeeded' if is_valid else 'failed'} for user {user_id}")
 
                 if is_valid:
                     user_authenticated[user_id] = True
-                    print(message_data)
+                    logging.info(f"User {user_id} authenticated successfully.")
 
                     # Use the WebSocket to find the correct BMS ID
                     for bms_id, bms_ws in bms_connections.items():
@@ -91,7 +96,7 @@ async def handle_bms_connection(websocket, path):
                             user_bms_mapping[user_id] = bms_id
                             break
                     else:
-                        print(f"Warning: Could not find BMS ID for authenticated user {user_id}.")
+                        logging.warning(f"Could not find BMS ID for authenticated user {user_id}.")
                     
                     await websocket.send(json.dumps({"status": "Authenticated", "user_id": user_id}))
                 else:
@@ -137,18 +142,18 @@ async def handle_bms_connection(websocket, path):
                     await websocket.send(json.dumps({"error": "Target user not authenticated", "user_id": source_user}))
 
             else:
-                print(f"Received an unsupported message: {msg}")
+                logging.warning(f"Received an unsupported message: {msg}")
                 await websocket.send(json.dumps({"error": "Unsupported message type"}))
 
     except websockets.exceptions.ConnectionClosed as e:
-        print(f"WebSocket connection closed: {e}")
+        logging.error(f"WebSocket connection closed: {e}")
     except websockets.exceptions.WebSocketException as e:
-        print(f"WebSocket error: {e}")
+        logging.error(f"WebSocket error: {e}")
     except Exception as e:
-        print(f"Error handling BMS connection: {e}")
+        logging.error(f"Error handling BMS connection: {e}")
     finally:
         # Clean up when connection is closed
-        print("BMS connection closed.")
+        logging.info("BMS connection closed.")
         # Remove BMS from connections after disconnect
         for bms_id, connection in list(bms_connections.items()):
             if connection == websocket:
@@ -168,7 +173,7 @@ async def handle_bms_connection(websocket, path):
 async def start_msc_server():
     # Bind to port 6789 to accept connections from the BMS
     server = await websockets.serve(handle_bms_connection, "localhost", 6789)
-    print("MSC server started on ws://localhost:6789 (waiting for BMS connections)")
+    logging.info("MSC server started on ws://localhost:6789 (waiting for BMS connections)")
 
     # Keep the server running
     await server.wait_closed()
