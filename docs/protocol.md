@@ -65,8 +65,8 @@ Packed IDs are a unique incrementing number so that responses can be linked to r
    ```json
    {
        "type": "bms_register",
-       "bms_id": "<bms_id>",
-       "packet_id": "<packet_id"
+       "packet_id": "<packet_id",
+       "bms_id": "<bms_id>"
    }
    ```
 
@@ -75,8 +75,8 @@ Packed IDs are a unique incrementing number so that responses can be linked to r
    {
        "type": "auth",
        "user_id": "<user_id>",
-       "bms_id": "<bms_id>",
-       "packet_id": "<packet_id"
+       "packet_id": "<packet_id",
+       "bms_id": "<bms_id>"
    }
    ```
 
@@ -87,7 +87,8 @@ Packed IDs are a unique incrementing number so that responses can be linked to r
        "user_id": "<user_id>",
        "challenge": "<challenge>",
        "response": "<response>",
-       "packet_id": "<packet_id"
+       "packet_id": "<packet_id",
+       "bms_id": "<bms_id>"
    }
    ```
 
@@ -96,8 +97,8 @@ Packed IDs are a unique incrementing number so that responses can be linked to r
    {
        "type": "auth_logout",
        "user_id": "<user_id>",
-       "bms_id": "<bms_id>",
-       "packet_id": "<packet_id"
+       "packet_id": "<packet_id",
+       "bms_id": "<bms_id>"
    }
    ```
 
@@ -108,11 +109,12 @@ Packed IDs are a unique incrementing number so that responses can be linked to r
        "source_user": "<source_user_id>",
        "target_user": "<target_user_id>",
        "message": "<message>",
-       "packet_id": "<packet_id"
+       "packet_id": "<packet_id",
+       "bms_id": "<bms_id>"
    }
    ```
 
-### MSC to BMS Messages
+### MSC to BMS to US Messages
 
 1. **Challenge Message**
    ```json
@@ -164,8 +166,8 @@ Packed IDs are a unique incrementing number so that responses can be linked to r
    - BMS forwards the `challenge `message to User Station.
    - User Station responds with an `auth_response` message.
    - BMS forwards the `auth_response` message to MSC.
-   - MSC validates the response and sends an `auth_response` message to BMS.
-   - BMS forwards the `auth_response` message to User Station.
+   - MSC validates the response and sends an `auth_result` message to BMS.
+   - BMS forwards the `auth_result` message to User Station.
 
 2. **User Logout**
    - User Station sends an `auth_logout` message to BMS.
