@@ -1,12 +1,11 @@
 import asyncio
 import websockets
 import json
-import hmac
 import hashlib
 
 def generate_response(challenge, secret_key):
-    """Generate a response to the challenge using HMAC-SHA256."""
-    return hmac.new(secret_key.encode(), challenge.encode(), hashlib.sha256).hexdigest()
+    """Generate a response to the challenge using SHA256."""
+    return hashlib.sha256(f"{secret_key}{challenge}".encode()).hexdigest()
 
 async def user_station(user_id, secret_key, bms_uri):
     """
@@ -23,10 +22,12 @@ async def user_station(user_id, secret_key, bms_uri):
 
             # Step 1: Send authentication request
             auth_request = {"type": "auth", "user_id": user_id}
+            print(f"[User {user_id}] Sending auth request: {auth_request}")
             await websocket.send(json.dumps(auth_request))
 
             # Step 2: Receive the challenge
             challenge_response = await websocket.recv()
+            print(f"[User {user_id}] Received challenge response: {challenge_response}")
             challenge_data = json.loads(challenge_response)
 
             if "challenge" in challenge_data:
@@ -37,12 +38,15 @@ async def user_station(user_id, secret_key, bms_uri):
                 response = {
                     "type": "auth_response",
                     "user_id": user_id,
+                    "challenge": challenge,
                     "response": generate_response(challenge, secret_key)
                 }
+                print(f"[User {user_id}] Sending response: {response}")
                 await websocket.send(json.dumps(response))
 
                 # Step 3: Receive authentication result
                 auth_result = await websocket.recv()
+                print(f"[User {user_id}] Received auth result: {auth_result}")
                 result_data = json.loads(auth_result)
 
                 if result_data.get("status") == "Authenticated":

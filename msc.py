@@ -46,7 +46,7 @@ async def handle_bms_connection(websocket, path):
             # Save BMS ID and associate it with the WebSocket connection
             bms_id = message_data["bms_id"]
             bms_connections[bms_id] = websocket
-            print(f"BMS {bms_id} registered successfully.")
+            print(f"[BMS {bms_id}] registered successfully.")
             await websocket.send(json.dumps({"status": "BMS registered"}))
         else:
             await websocket.send(json.dumps({"error": "Invalid registration message"}))
@@ -60,25 +60,42 @@ async def handle_bms_connection(websocket, path):
                 bms_id = message_data["bms_id"]
 
                 if user_id in user_authenticated and user_bms_mapping.get(user_id) == bms_id:
-                    await websocket.send(json.dumps({"status": "Already authenticated"}))
+                    await websocket.send(json.dumps({"status": "Already authenticated", "user_id": user_id}))
                     continue
 
                 # Generate a challenge and send to the BMS
                 challenge = generate_challenge()
-                challenge_message = {"challenge": challenge, "user_id": user_id}
+                challenge_message = {"type": "challenge", "challenge": challenge, "user_id": user_id}
+                print(f"Generated challenge for user {user_id}: {challenge}")
                 await websocket.send(json.dumps(challenge_message))
 
             elif message_data["type"] == "auth_response":
                 user_id = message_data["user_id"]
+                challenge = message_data["challenge"]
                 response = message_data["response"]
 
                 # Validate the response
-                if validate_response(user_id, response):
+                is_valid = validate_response(user_id, {"challenge": challenge, "response": response})
+                expected_response = hashlib.sha256(f"{user_secrets[user_id]}{challenge}".encode()).hexdigest()
+                print(f"Received auth response for user {user_id}: {response}")
+                print(f"Expected response for user {user_id}: {expected_response}")
+                print(f"Authentication {'succeeded' if is_valid else 'failed'} for user {user_id}")
+
+                if is_valid:
                     user_authenticated[user_id] = True
-                    user_bms_mapping[user_id] = message_data["bms_id"]
-                    await websocket.send(json.dumps({"status": "Authenticated"}))
+                    print(message_data)
+
+                    # Use the WebSocket to find the correct BMS ID
+                    for bms_id, bms_ws in bms_connections.items():
+                        if bms_ws == websocket:
+                            user_bms_mapping[user_id] = bms_id
+                            break
+                    else:
+                        print(f"Warning: Could not find BMS ID for authenticated user {user_id}.")
+                    
+                    await websocket.send(json.dumps({"status": "Authenticated", "user_id": user_id}))
                 else:
-                    await websocket.send(json.dumps({"error": "Authentication failed"}))
+                    await websocket.send(json.dumps({"error": "Authentication failed", "user_id": user_id}))
 
             elif message_data["type"] == "auth_logout" and message_data.get("user_id") and message_data.get("bms_id"):
                 # Handle user logout
@@ -89,9 +106,9 @@ async def handle_bms_connection(websocket, path):
                 if user_id in user_authenticated and user_bms_mapping.get(user_id) == bms_id:
                     del user_authenticated[user_id]
                     del user_bms_mapping[user_id]
-                    await websocket.send(json.dumps({"status": "User logged out"}))
+                    await websocket.send(json.dumps({"status": "User logged out", "user_id": user_id}))
                 else:
-                    await websocket.send(json.dumps({"error": "User not authenticated or BMS mismatch"}))
+                    await websocket.send(json.dumps({"error": "User not authenticated or BMS mismatch", "user_id": user_id}))
 
             elif message_data["type"] == "text" and message_data.get("target_user"):
                 # Handle message forwarding to the correct BMS
@@ -113,11 +130,11 @@ async def handle_bms_connection(websocket, path):
                             "source_user": source_user,
                             "target_user": target_user
                         }))
-                        await websocket.send(json.dumps({"status": "Message forwarded to BMS"}))
+                        await websocket.send(json.dumps({"status": "Message forwarded to BMS", "user_id": source_user}))
                     else:
-                        await websocket.send(json.dumps({"error": "Target user not found or not connected"}))
+                        await websocket.send(json.dumps({"error": "Target user not found or not connected", "user_id": source_user}))
                 else:
-                    await websocket.send(json.dumps({"error": "Target user not authenticated"}))
+                    await websocket.send(json.dumps({"error": "Target user not authenticated", "user_id": source_user}))
 
             else:
                 print(f"Received an unsupported message: {msg}")
