@@ -143,8 +143,12 @@ class UserStationConnection(threading.Thread):
                 message = json.loads(incoming)
                 logger.info(f"Received from User Station {self.user_id}: {message}")
                 self.process_message(message)
+            except websockets.ConnectionClosed:
+                logger.info(f"User Station {self.user_id} disconnected unexpectedly.")
+                self.running = False
             except Exception as e:
                 logger.error(f"Error receiving message for UserStationConnection {self.user_id}: {e}")
+                self.running = False
 
     async def handle_user_station(self):
         try:
@@ -156,6 +160,21 @@ class UserStationConnection(threading.Thread):
             await asyncio.gather(send_task, receive_task)
         except Exception as e:
             logger.error(f"Error in UserStationConnection for {self.user_id}: {e}")
+        finally:
+            self.running = False
+            self.websocket.close()
+            if self.user_id in self.base_message_station.user_queues:
+                del self.base_message_station.user_queues[self.user_id]
+                logger.info(f"Cleaned up resources for user {self.user_id}")
+                # Send auth_logout packet to MSC
+                logout_message = {
+                    "type": "auth_logout",
+                    "user_id": self.user_id,
+                    "packet_id": self.base_message_station.generate_packet_id(),
+                    "bms_id": self.base_message_station.bms_id
+                }
+                self.msc_outgoing_queue.put(logout_message)
+                logger.info(f"Sent auth_logout for user {self.user_id} to MSC")
 
     def run(self):
         asyncio.run(self.handle_user_station())
@@ -233,6 +252,15 @@ class BaseMessageStation:
             if user_id:
                 self.user_queues.pop(user_id, None)
                 logger.info(f"User {user_id} disconnected.")
+                # Send auth_logout packet to MSC
+                logout_message = {
+                    "type": "auth_logout",
+                    "user_id": user_id,
+                    "packet_id": self.generate_packet_id(),
+                    "bms_id": self.bms_id
+                }
+                self.msc_outgoing_queue.put(logout_message)
+                logger.info(f"Sent auth_logout for user {user_id} to MSC")
 
     async def start_server(self):
         self.msc_connection.start()
