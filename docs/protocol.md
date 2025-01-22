@@ -17,6 +17,19 @@ Authentication challenges are derived from the US's secret key which both the US
 
 Packed IDs are a unique incrementing number so that responses can be linked to requests. 
 
+Authentication challenges are generated like:
+
+```python
+import hmac
+import hashlib
+
+def generate_challenge(self, user_id, secret_key):
+   """ Generate a challenge for the user based on their secret key. """
+   # Here we use a simple HMAC with SHA-256 for challenge generation
+   challenge = hmac.new(secret_key.encode(), user_id.encode(), hashlib.sha256).hexdigest()
+   return challenge
+```
+
 ### User Station to BMS Messages
 
 1. **Authentication Request**
@@ -114,7 +127,19 @@ Packed IDs are a unique incrementing number so that responses can be linked to r
    }
    ```
 
-### MSC to BMS to US Messages
+### MSC to BMS Messages
+
+1. **BMS Registration Response**
+   ```json
+   {
+       "type": "bms_register_response",
+       "status": "Registered",
+       "packet_id": "<packet_id",
+       "bms_id": "<bms_id>"
+   }
+   ```
+
+### MSC to US Messages through BMS
 
 1. **Challenge Message**
    ```json
