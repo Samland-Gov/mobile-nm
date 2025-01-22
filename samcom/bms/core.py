@@ -269,11 +269,6 @@ class BaseMessageStation:
             logging.info(f"BMS {self.bms_id} running on {self.host}:{self.port}")
             await asyncio.Future()  # Keep server running
 
-if __name__ == "__main__":
-    HOST = "localhost"
-    PORT = 9001
-    MSC_URL = "ws://localhost:9000"
-    BMS_ID = "BMS1"
-
-    bms = BaseMessageStation(HOST, PORT, MSC_URL, BMS_ID)
+def main(host: str, port: int, msc_url: str, bms_id: str):
+    bms = BaseMessageStation(host, port, msc_url, bms_id)
     asyncio.run(bms.start_server())

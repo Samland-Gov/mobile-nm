@@ -3,7 +3,7 @@ import websockets
 import json
 import asyncio
 import hmac
-import hashlib
+from ..common.exchange import generate_challenge
 
 # Configuring logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,6 +19,13 @@ class UserManager:
             }
         }
 
+    def make_challenge(self, user_id):
+        """ Generate a challenge for a user based on the secret key. """
+        if user_id in self.users:
+            secret_key = self.users[user_id]['secret_key']
+            return generate_challenge(user_id, secret_key)
+        return None
+
     def authenticate_user(self, user_id, response, secret_key):
         """ Authenticate a user based on the challenge-response mechanism. """
         logger.info(f"Authenticating user: {user_id} with response: {response}")
@@ -26,7 +33,7 @@ class UserManager:
             self.users[user_id] = {'authenticated': False, 'secret_key': secret_key}
         
         # Validate the response using HMAC
-        expected_response = self.generate_challenge(user_id)
+        expected_response = self.make_challenge(user_id)
         if hmac.compare_digest(expected_response, response):
             self.users[user_id]['authenticated'] = True
             return True
@@ -45,13 +52,6 @@ class UserManager:
         if user_id in self.users:
             return self.users[user_id]['authenticated']
         return False
-
-    def generate_challenge(self, user_id):
-        """ Generate a challenge for the user based on their secret key. """
-        secret_key = self.users[user_id]['secret_key']
-        # Here we use a simple HMAC with SHA-256 for challenge generation
-        challenge = hmac.new(secret_key.encode(), user_id.encode(), hashlib.sha256).hexdigest()
-        return challenge
 
 # Class for managing the BMS connections
 class BMSConnectionManager:
@@ -75,7 +75,7 @@ class BMSConnectionManager:
 
 # Class for message processing and routing
 class MessageRouter:
-    def __init__(self, user_manager, bms_manager):
+    def __init__(self, user_manager: UserManager, bms_manager: BMSConnectionManager):
         self.user_manager = user_manager
         self.bms_manager = bms_manager
 
@@ -134,7 +134,7 @@ class MessageRouter:
         bms_connection = self.bms_manager.get_bms_connection(msg.get("bms_id"))
         if bms_connection:
             # Generate challenge from user's secret key
-            challenge = self.user_manager.generate_challenge(user_id)
+            challenge = self.user_manager.make_challenge(user_id)
             auth_msg = {
                 "type": "challenge",
                 "challenge": challenge,
@@ -247,14 +247,14 @@ async def websocket_handler(websocket, path):
     finally:
         logger.info(f"Connection from {websocket.remote_address} closed.")
 
-async def start_server():
+async def start_server(host: str, port: int):
     """Start the WebSocket server."""
     server = await websockets.serve(
         websocket_handler,
-        "localhost", 9000
+        host, port
     )
-    logger.info("MSC WebSocket server started on ws://localhost:9000")
+    logger.info(f"MSC WebSocket server started on ws://{host}:{port}")
     await server.wait_closed()
 
-if __name__ == "__main__":
-    asyncio.run(start_server())
+def main(host: str, port: int):
+    asyncio.run(start_server(host, port))
